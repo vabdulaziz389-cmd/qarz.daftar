@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f5c63">
+<title>Zapravka qarz daftari</title>
+<style>
+:root{--bg:#eef1f2;--card:#fff;--ink:#1c2528;--mute:#5d6b70;--line:#d5dcde;--accent:#0f5c63;--accent-ink:#fff;--warn:#b3261e;--ok:#2e7d4f;--hl:#fff4c2}
+@media (prefers-color-scheme:dark){:root{--bg:#141a1c;--card:#1d2528;--ink:#e6eced;--mute:#9aa9ae;--line:#34434a;--accent:#4fb3bd;--accent-ink:#0c1a1c;--warn:#ff8a80;--ok:#7bd49f;--hl:#3a3410}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",Roboto,Arial,sans-serif}
+header{background:var(--accent);color:var(--accent-ink);padding:18px 16px}
+header h1{margin:0;font-size:22px;letter-spacing:.2px}
+header p{margin:2px 0 0;opacity:.85;font-size:13px}
+main{max-width:1100px;margin:0 auto;padding:16px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+.stat{background:var(--card);border-left:5px solid var(--accent);padding:10px 12px}
+.stat b{display:block;font-size:20px}
+.stat span{color:var(--mute);font-size:13px}
+.stat.bad{border-color:var(--warn)}
+.box{background:var(--card);padding:14px;margin-bottom:16px;border:1px solid var(--line)}
+.box h2{margin:0 0 10px;font-size:17px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+label{display:block;font-size:13px;color:var(--mute)}
+input,select{width:100%;padding:8px;margin-top:3px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button{font:inherit;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);padding:8px 14px;border-radius:4px}
+button.ghost{background:transparent;color:var(--accent)}
+button.sm{padding:4px 9px;font-size:13px}
+button.del{border-color:var(--warn);color:var(--warn);background:transparent}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin-bottom:10px}
+.bar>*{flex:1 1 150px}.bar button{flex:0 0 auto}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tabs button{background:var(--card);color:var(--ink);border-color:var(--line)}
+.tabs button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:var(--card);min-width:820px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:13px;color:var(--mute);font-weight:600;background:var(--bg)}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.over td{background:var(--hl)}
+tr.done td{opacity:.6}
+.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;border:1px solid var(--line)}
+.tag.over{color:var(--warn);border-color:var(--warn)}.tag.done{color:var(--ok);border-color:var(--ok)}
+.sub{color:var(--mute);font-size:13px}
+.acts{display:flex;gap:5px;flex-wrap:wrap}
+.empty{padding:26px;text-align:center;color:var(--mute)}
+.hide{display:none}
+a{color:var(--accent)}
+@media (max-width:700px){
+main{padding:10px}
+input,select,button{font-size:16px}
+.stats{grid-template-columns:1fr 1fr}
+.stat b{font-size:16px}
+.tabs button{flex:1}
+table{min-width:0;background:none}
+thead{display:none}
+tbody tr{display:block;background:var(--card);border:1px solid var(--line);margin-bottom:10px;padding:6px 10px}
+tr.over{background:var(--hl)}
+td{display:flex;justify-content:space-between;gap:12px;border:0;padding:5px 0;text-align:right}
+td::before{content:attr(data-l);color:var(--mute);font-size:13px;text-align:left;flex:0 0 auto}
+td.n{white-space:normal}
+td.act,td.empty{display:block;text-align:left}
+td.act::before,td.empty::before{display:none}
+td.empty{text-align:center}
+.acts button.sm{padding:8px 12px}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Zapravka qarz daftari</h1>
+  <p>Kim, qachon, qancha qarz olgani va qancha qolgani</p>
+</header>
+<main>
+  <div class="stats" id="stats"></div>
+
+  <form class="box" id="form" autocomplete="off">
+    <h2>Yangi qarz yozish</h2>
+    <div class="grid">
+      <label>Ism *<input id="name" required></label>
+      <label>Telefon raqami<input id="phone" type="tel" placeholder="+998 90 123 45 67"></label>
+      <label>Mashina raqami<input id="plate" placeholder="01 A 123 AA"></label>
+      <label>Mashina turi<input id="car" placeholder="Nexia 3, Gentra, Damas..."></label>
+      <label>Qarz olgan sana *<input id="date" type="date" required></label>
+      <label>Qancha oldi (so'm) *<input id="amount" type="number" min="1" step="any" required></label>
+      <label>Hozir bergani (so'm)<input id="paid" type="number" min="0" step="any" value="0"></label>
+      <label>Qachon qaytaradi<input id="due" type="date"></label>
+      <label>Izoh (masalan: AI-92, 30 litr)<input id="note"></label>
+    </div>
+    <p><button type="submit">Qarzni saqlash</button></p>
+  </form>
+
+  <div class="tabs">
+    <button id="t1" class="on">Hamma qarzlar</button>
+    <button id="t2">Kunlik hisob</button>
+  </div>
+
+  <section id="v1">
+    <div class="bar">
+      <label>Qidirish (ism, telefon, raqam)<input id="q" placeholder="Qidirish..."></label>
+      <label>Holat
+        <select id="flt"><option value="open">Ochiq qarzlar</option><option value="over">Muddati o'tgan</option><option value="done">Yopilgan</option><option value="all">Hammasi</option></select>
+      </label>
+    </div>
+    <div class="wrap"><table>
+      <thead><tr><th>Kim</th><th>Mashina</th><th>Sana</th><th class="n">Oldi</th><th class="n">Bergani</th><th class="n">Qoldi</th><th>Muddat</th><th></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+  </section>
+
+  <section id="v2" class="hide">
+    <div class="wrap"><table>
+      <thead><tr><th>Sana</th><th class="n">Nechta qarz</th><th class="n">Berilgan qarz summasi</th><th class="n">Shundan qaytgan</th><th class="n">Shundan qolgan</th></tr></thead>
+      <tbody id="days"></tbody>
+    </table></div>
+    <p class="sub">Har bir sana uchun shu kuni olingan qarzlar yig'indisi ko'rsatiladi.</p>
+  </section>
+
+  <div class="box">
+    <h2>Zaxira nusxa</h2>
+    <p class="sub">Ma'lumotlar shu qurilmadagi brauzerda saqlanadi. Brauzer tozalansa yo'qolishi mumkin, shuning uchun tez-tez zaxira nusxa oling.</p>
+    <div class="acts">
+      <button class="ghost" id="exJson">JSON yuklab olish</button>
+      <button class="ghost" id="exCsv">Excel uchun CSV</button>
+      <button class="ghost" id="imp">JSON dan tiklash</button>
+      <input type="file" id="file" accept=".json,application/json" class="hide">
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+var KEY="zapravka_qarz_v1", $=function(i){return document.getElementById(i)};
+var data=[];
+try{data=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){data=[]}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){alert("Saqlab bo'lmadi: brauzer xotirasi yopiq.")}}
+function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function money(n){return Math.round(n).toLocaleString("ru-RU")}
+function fd(s){if(!s)return "-";var p=s.split("-");return p[2]+"."+p[1]+"."+p[0]}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function tel(p){var n=String(p||"").replace(/[^\d+]/g,"");return n?'<a href="tel:'+n+'">'+esc(p)+'</a>':esc(p)}
+function paid(d){return d.payments.reduce(function(a,p){return a+p.sum},0)}
+function left(d){return Math.max(0,d.amount-paid(d))}
+function status(d){if(left(d)<=0)return "done";if(d.due&&d.due<today())return "over";return "open"}
+
+function stats(){
+  var t=today(),open=data.filter(function(d){return status(d)!=="done"});
+  var sum=open.reduce(function(a,d){return a+left(d)},0);
+  var td=data.filter(function(d){return d.date===t});
+  var tsum=td.reduce(function(a,d){return a+d.amount},0);
+  var ov=data.filter(function(d){return status(d)==="over"});
+  var ovs=ov.reduce(function(a,d){return a+left(d)},0);
+  $("stats").innerHTML=
+   '<div class="stat"><b>'+money(sum)+' so\'m</b><span>Jami qolgan qarz</span></div>'+
+   '<div class="stat"><b>'+open.length+' ta</b><span>Qarzi bor odamlar</span></div>'+
+   '<div class="stat"><b>'+td.length+' ta / '+money(tsum)+' so\'m</b><span>Bugun berilgan qarz</span></div>'+
+   '<div class="stat bad"><b>'+ov.length+' ta / '+money(ovs)+' so\'m</b><span>Muddati o\'tgan</span></div>';
+}
+
+function rows(){
+  var q=$("q").value.trim().toLowerCase(),f=$("flt").value;
+  var list=data.filter(function(d){
+    var s=status(d);
+    if(f==="open"&&s==="done")return false;
+    if(f==="over"&&s!=="over")return false;
+    if(f==="done"&&s!=="done")return false;
+    if(!q)return true;
+    return (d.name+" "+d.phone+" "+d.plate+" "+d.car).toLowerCase().indexOf(q)>-1;
+  }).sort(function(a,b){return a.date<b.date?1:-1});
+  if(!list.length){$("rows").innerHTML='<tr><td colspan="8" class="empty">Hozircha yozuv yo\'q. Yuqoridagi shaklga birinchi qarzni yozing.</td></tr>';return}
+  $("rows").innerHTML=list.map(function(d){
+    var s=status(d),tag=s==="over"?' <span class="tag over">muddati o\'tgan</span>':s==="done"?' <span class="tag done">yopilgan</span>':"";
+    return '<tr class="'+s+'">'+
+     '<td data-l="Kim"><span class="v"><b>'+esc(d.name)+'</b>'+tag+'<div class="sub">'+tel(d.phone)+'</div>'+(d.note?'<div class="sub">'+esc(d.note)+'</div>':"")+'</span></td>'+
+     '<td data-l="Mashina"><span class="v">'+esc(d.plate||"-")+'<div class="sub">'+esc(d.car)+'</div></span></td>'+
+     '<td data-l="Sana"><span class="v">'+fd(d.date)+'</span></td>'+
+     '<td class="n" data-l="Oldi"><span class="v">'+money(d.amount)+'</span></td>'+
+     '<td class="n" data-l="Bergani"><span class="v">'+money(paid(d))+'</span></td>'+
+     '<td class="n" data-l="Qoldi"><span class="v"><b>'+money(left(d))+'</b></span></td>'+
+     '<td data-l="Muddat"><span class="v">'+fd(d.due)+'</span></td>'+
+     '<td class="act"><div class="acts"><button class="sm" data-a="pay" data-id="'+d.id+'">To\'lov</button>'+
+     '<button class="sm ghost" data-a="hist" data-id="'+d.id+'">Tarix</button>'+
+     '<button class="sm del" data-a="del" data-id="'+d.id+'">O\'chirish</button></div></td></tr>';
+  }).join("");
+}
+
+function days(){
+  var m={};
+  data.forEach(function(d){var o=m[d.date]||(m[d.date]={n:0,a:0,p:0});o.n++;o.a+=d.amount;o.p+=Math.min(d.amount,paid(d))});
+  var keys=Object.keys(m).sort().reverse();
+  if(!keys.length){$("days").innerHTML='<tr><td colspan="5" class="empty">Hali ma\'lumot yo\'q.</td></tr>';return}
+  $("days").innerHTML=keys.map(function(k){var o=m[k];
+    return '<tr><td data-l="Sana"><span class="v">'+fd(k)+'</span></td><td class="n" data-l="Nechta qarz"><span class="v">'+o.n+'</span></td><td class="n" data-l="Berilgan summa"><span class="v">'+money(o.a)+'</span></td><td class="n" data-l="Qaytgan"><span class="v">'+money(o.p)+'</span></td><td class="n" data-l="Qolgan"><span class="v"><b>'+money(o.a-o.p)+'</b></span></td></tr>'}).join("");
+}
+
+function render(){stats();rows();days()}
+
+$("form").addEventListener("submit",function(e){
+  e.preventDefault();
+  var amount=parseFloat($("amount").value),p=parseFloat($("paid").value)||0;
+  if(!(amount>0)){alert("Qarz summasini kiriting.");return}
+  if(p>amount){alert("Bergani summasi qarzdan katta bo'lishi mumkin emas.");return}
+  var d={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+    name:$("name").value.trim(),phone:$("phone").value.trim(),plate:$("plate").value.trim().toUpperCase(),
+    car:$("car").value.trim(),date:$("date").value,due:$("due").value,amount:amount,note:$("note").value.trim(),payments:[]};
+  if(p>0)d.payments.push({date:d.date,sum:p});
+  data.push(d);save();
+  $("form").reset();$("date").value=today();$("paid").value=0;
+  render();
+});
+
+$("rows").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  var d=data.filter(function(x){return x.id===b.dataset.id})[0];if(!d)return;
+  if(b.dataset.a==="pay"){
+    var r=prompt(d.name+": qancha to'ladi? (qolgan: "+money(left(d))+" so'm)");
+    if(r===null)return;
+    var s=parseFloat(String(r).replace(/\s/g,"").replace(",","."));
+    if(!(s>0)){alert("To'g'ri summa kiriting.");return}
+    if(s>left(d)){alert("Summa qolgan qarzdan katta: "+money(left(d))+" so'm.");return}
+    d.payments.push({date:today(),sum:s});save();render();
+  }else if(b.dataset.a==="hist"){
+    var h=d.payments.length?d.payments.map(function(p){return fd(p.date)+" - "+money(p.sum)+" so'm"}).join("\n"):"Hali to'lov bo'lmagan.";
+    alert(d.name+"\nOldi: "+money(d.amount)+" so'm ("+fd(d.date)+")\n\nTo'lovlar:\n"+h);
+  }else if(b.dataset.a==="del"){
+    if(confirm(d.name+" yozuvini o'chirasizmi? Buni qaytarib bo'lmaydi.")){data=data.filter(function(x){return x!==d});save();render()}
+  }
+});
+
+$("q").addEventListener("input",rows);$("flt").addEventListener("change",rows);
+function tab(n){$("v1").classList.toggle("hide",n!==1);$("v2").classList.toggle("hide",n!==2);$("t1").classList.toggle("on",n===1);$("t2").classList.toggle("on",n===2)}
+$("t1").onclick=function(){tab(1)};$("t2").onclick=function(){tab(2)};
+
+function dl(name,text,type){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:type}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
+$("exJson").onclick=function(){dl("qarz-zaxira-"+today()+".json",JSON.stringify(data,null,1),"application/json")};
+$("exCsv").onclick=function(){
+  var h=["Ism","Telefon","Mashina raqami","Mashina turi","Sana","Oldi","Bergani","Qoldi","Muddat","Izoh"];
+  var L=[h].concat(data.map(function(d){return [d.name,d.phone,d.plate,d.car,fd(d.date),d.amount,paid(d),left(d),fd(d.due),d.note]}));
+  var csv=L.map(function(r){return r.map(function(c){return '"'+String(c==null?"":c).replace(/"/g,'""')+'"'}).join(";")}).join("\r\n");
+  dl("qarzlar-"+today()+".csv","\ufeff"+csv,"text/csv;charset=utf-8");
+};
+$("imp").onclick=function(){$("file").click()};
+$("file").addEventListener("change",function(){
+  var f=this.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(){try{
+    var j=JSON.parse(r.result);if(!Array.isArray(j))throw 0;
+    if(confirm("Hozirgi ma'lumotlar o'rniga fayldagi "+j.length+" ta yozuv yuklansinmi?")){data=j;save();render()}
+  }catch(e){alert("Fayl noto'g'ri: bu zaxira JSON fayli emas.")}};
+  r.readAsText(f);this.value="";
+});
+
+$("date").value=today();
+render();
+})();
+</script>
+</body>
+</html>
